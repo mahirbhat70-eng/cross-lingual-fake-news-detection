@@ -1,0 +1,25 @@
+# Virtual env
+.venv/
+env/
+venv/
+
+# Data and model artifacts
+data/
+models/
+results/
+logs/
+
+# Python
+__pycache__/
+*.pyc
+
+# Notebooks
+.ipynb_checkpoints/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db
+.DS_Store

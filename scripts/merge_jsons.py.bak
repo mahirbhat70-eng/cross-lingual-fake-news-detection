@@ -1,0 +1,47 @@
+import json
+import os
+import random
+
+def merge_json_files(input_paths, output_path):
+    """
+    Merges multiple JSON files containing lists of objects into a single file,
+    then shuffles the result.
+    """
+    combined_data = []
+    
+    # Loop through each file path and add its data to our list
+    for file_path in input_paths:
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                combined_data.extend(data)
+                print(f"Loaded {len(data)} items from {file_path}")
+        except FileNotFoundError:
+            print(f"Warning: The file {file_path} was not found. Skipping.")
+
+    # Shuffle the combined data to mix fake and real news together
+    print("Shuffling the combined data...")
+    random.shuffle(combined_data)
+
+    # Write the final shuffled list to the output file
+    print(f"Total items combined: {len(combined_data)}. Writing to {output_path}...")
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(combined_data, f, ensure_ascii=False, indent=4)
+
+    print("Merging complete!")
+
+if __name__ == '__main__':
+    # Get the path to the 'dataset' directory
+    dataset_dir = os.path.join(os.path.dirname(__file__), '..', 'data', 'dataset')
+
+    # List of all the JSON files you want to merge
+    files_to_merge = [
+        os.path.join(dataset_dir, 'politifact_fake.json'),
+        os.path.join(dataset_dir, 'politifact_real.json')
+    ]
+
+    # The name and path for the final output file
+    combined_file_path = os.path.join(dataset_dir, 'combined_dataset.json')
+
+    # Run the function to merge the files
+    merge_json_files(files_to_merge, combined_file_path)
