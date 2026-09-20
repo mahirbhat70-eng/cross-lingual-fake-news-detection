@@ -1,72 +1,174 @@
-# Cross Lingual Fake News Detection
+<div align="center">
 
-This project implements a cross lingual fake news detection pipeline using XLM RoBERTa based models. Code includes preprocessing, training, evaluation, and a minimal app for inference.
+# 🌐 Cross-Lingual Fake News Detection
+### Multilingual Misinformation Detection using XLM-RoBERTa
 
-## Quickstart
-1. Create virtual env and activate
-   .\.venv\Scripts\Activate.ps1
-2. Install dependencies
-   pip install -r requirements.txt
-3. Train
-   python src/train.py
-4. Run app
-   python scripts/app.py
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org)
+[![Hugging Face](https://img.shields.io/badge/Transformers-Hugging%20Face-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)](https://huggingface.co)
+[![Model](https://img.shields.io/badge/Model-XLM--RoBERTa--base-blueviolet?style=for-the-badge)](https://huggingface.co/xlm-roberta-base)
+[![Streamlit](https://img.shields.io/badge/App-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
-## Run Prediction
-```bash
-python src/predict.py --text "Example news article"
+<p align="center">
+  <b>A cross-lingual NLP pipeline:</b> Detecting misinformation and fabricated claims across diverse languages (English, Hindi, and low-resource Indic languages) by leveraging shared multilingual semantic representations in cross-lingual transformer models.
+</p>
+
+</div>
+
+---
+
+## 📌 Project Overview
+
+Online misinformation spreads rapidly across linguistic boundaries, while fact-checking resources are overwhelmingly concentrated in English. This project builds a **Cross-Lingual Fake News Detection** framework based on **XLM-RoBERTa (Cross-lingual RoBERTa)**.
+
+By fine-tuning multilingual contextual language representations, the model learns shared semantic boundaries of deception, allowing effective **zero-shot cross-lingual transfer** from high-resource languages (English) to low-resource languages (Hindi and regional languages) without requiring extensive translated training sets.
+
+---
+
+## 🏗️ End-to-End Pipeline
+
+```mermaid
+flowchart LR
+    subgraph Data ["1. Data Ingestion & Preprocessing"]
+        D1["LIAR Benchmark (English)"]
+        D2["Politifact (English)"]
+        D3["Indic / Hindi News Corpus"]
+        P1["Text Cleaning & Normalization"]
+        P2["Class Balancing & Stratification"]
+    end
+
+    subgraph Model ["2. Multilingual Representation & Training"]
+        TOK["XLM-RoBERTa Tokenizer\n(SentencePiece 250k Vocab)"]
+        BACKBONE["XLM-RoBERTa Base Backbone\n(100+ Languages)"]
+        HEAD["Classification Head\n(Dropout + Dense Layer)"]
+    end
+
+    subgraph Eval ["3. Evaluation & Diagnostics"]
+        Z_SHOT["Zero-Shot Cross-Lingual Transfer\n(Train En -> Eval Hi)"]
+        METRICS["Precision, Recall, Macro-F1"]
+        ERR["Automated Error Tagging & Analysis"]
+    end
+
+    subgraph Deploy ["4. Interactive Deployment"]
+        APP["Streamlit / Web Inference Application"]
+    end
+
+    D1 & D2 & D3 --> P1 --> P2 --> TOK --> BACKBONE --> HEAD
+    HEAD --> Z_SHOT --> METRICS --> ERR
+    HEAD --> APP
 ```
 
-## Trained Model
+---
 
-Due to GitHub file size limits, trained models are not stored in this repository.
+## ✨ Key Features
 
-To use the model:
+- **Multilingual Semantic Embeddings**: Utilizes `xlm-roberta-base` trained on 2.5TB of filtered CommonCrawl data across 100 languages.
+- **Zero-Shot Cross-Lingual Evaluation**: Validates the model's ability to classify Hindi and bilingual claims after training primarily on structured English datasets.
+- **Robust Preprocessing Pipeline**: Scripts for token normalization, label remapping (binary & multi-class), class balancing, and dataset merging.
+- **Error Analysis Suite**: Automated failure-case tagging (`scripts/auto_error_tag.py`) to diagnose linguistic ambiguity, length sensitivity, and cultural bias.
+- **Interactive Inference App**: Lightweight web interface (`scripts/app.py`) for real-time article verification and confidence breakdown.
 
-1. Download the trained checkpoint from the link below
-   `[MODEL_DOWNLOAD_LINK]`
-2. Place the downloaded model inside
-   `models/xlm_roberta_fake_news_classifier/`
-3. Run inference
-   `python src/predict.py`
+---
 
-## Dataset
+## 📊 Experimental Setup & Hyperparameters
 
-This project uses multiple datasets for cross lingual fake news detection.
+Configured in [`config.yaml`](config.yaml):
 
-Example datasets:
-- LIAR dataset
-- Hindi news dataset
-- Politifact dataset
+| Parameter | Default Value | Description |
+|---|---|---|
+| **Base Model** | `xlm-roberta-base` | Pretrained multilingual transformer |
+| **Train Batch Size** | `8` | Effective per-device training batch size |
+| **Eval Batch Size** | `8` | Validation evaluation batch size |
+| **Learning Rate** | `2e-5` | AdamW optimizer initial learning rate |
+| **Epochs** | `3` | Full training passes with linear warmup |
+| **Max Sequence Length** | `256 / 512` | Token sequence cutoff |
 
-Datasets are not included in this repository. Place datasets inside:
-`data/dataset/`
+---
 
-## Project Pipeline
+## 🚀 Quickstart Guide
 
-1. **Data Collection**
-   News datasets collected from multiple sources.
-2. **Data Preprocessing**
-   Cleaning text and preparing multilingual inputs.
-3. **Model Training**
-   Fine tuning XLM RoBERTa for fake news classification.
-4. **Evaluation**
-   Model evaluated on validation and test sets.
-5. **Deployment**
-   Inference through the app.py interface.
+### 1. Environment Setup
+```bash
+# Clone the repository
+git clone https://github.com/mahirbhat70-eng/cross-lingual-fake-news-detection.git
+cd cross-lingual-fake-news-detection
 
-## Results
+# Create and activate a virtual environment
+python -m venv .venv
+# On Windows:
+.\.venv\Scripts\Activate.ps1
+# On Linux/macOS:
+source .venv/bin/activate
 
-Model: XLM RoBERTa
+# Install dependencies
+pip install -r requirements.txt
+```
 
-- Accuracy: XX %
-- F1 Score: XX %
+### 2. Dataset Preparation
+Place datasets under `data/dataset/`:
+- **LIAR Dataset**: `data/dataset/liar/`
+- **Hindi Corpus**: `data/dataset/hindi/`
+- **Politifact**: `data/dataset/politifact/`
 
-Results and evaluation metrics are stored in the results/ directory.
+Run preprocessing and dataset alignment:
+```bash
+python scripts/convert_liar_to_binary.py
+python scripts/fix_hindi_dataset.py
+python scripts/balance_dataset.py
+```
 
-## Files
-- src : training and model code
-- scripts : app and helper scripts
-- notebooks : EDA and experiments
-- data : raw and processed data (ignored)
-- models : trained checkpoints (ignored)
+### 3. Model Training
+```bash
+python src/train.py
+```
+
+### 4. Cross-Lingual Evaluation & Diagnostics
+```bash
+# Evaluate Macro-F1 across languages
+python scripts/eval_f1.py
+
+# Evaluate zero-shot cross-lingual transfer
+python scripts/evaluate_zeroshot.py
+
+# Generate automated error tagging report
+python scripts/auto_error_tag.py
+```
+
+### 5. Run Prediction & Interactive Demo
+```bash
+# Run CLI prediction on a sample article
+python src/predict.py --text "Breaking: Scientists confirm water found on new terrestrial planet."
+
+# Launch the interactive web app
+python scripts/app.py
+```
+
+---
+
+## 📂 Repository Structure
+
+```text
+cross-lingual-fake-news-detection/
+├── config.yaml               # Training, tokenizer, and hyperparameter configuration
+├── requirements.txt          # Python dependencies (PyTorch, Transformers, Datasets, etc.)
+├── src/
+│   ├── train.py              # Model fine-tuning script with Trainer API
+│   ├── evaluate.py           # Multi-metric validation routine
+│   └── predict.py            # Single-text and batch inference pipeline
+├── scripts/
+│   ├── app.py                # Interactive web interface for inference
+│   ├── evaluate_zeroshot.py  # Cross-lingual zero-shot transfer evaluation
+│   ├── eval_f1.py            # F1 score and confusion matrix reporting
+│   ├── auto_error_tag.py     # Automated error pattern classification
+│   ├── balance_dataset.py    # Class balance and resampling utilities
+│   └── prepare_liar.py       # Benchmark dataset parsers
+├── notebooks/                # Exploratory data analysis and training experiments
+├── docs/                     # Detailed project notes and experiment summaries
+└── data/                     # Raw and processed datasets (git-ignored for security)
+```
+
+---
+
+## 📄 License
+This project is open-source and available under the [MIT License](LICENSE).
